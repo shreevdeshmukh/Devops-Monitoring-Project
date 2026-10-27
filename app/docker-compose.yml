@@ -1,1 +1,8 @@
-
+services:
+  webapp:
+    build:
+      context: .
+    container_name: webapp
+    restart: unless-stopped
+    ports:
+      - "8080:80"
