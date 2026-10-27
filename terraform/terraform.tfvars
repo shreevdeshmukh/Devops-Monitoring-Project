@@ -1,5 +1,5 @@
 aws_region    = "ap-south-1"
 key_name     = "valaxy-key.pem"
 admin_cidr   = "103.197.74.199/32"
-jenkins_cidr = "52.66.214.146/32"
+jenkins_cidr = "13.232.169.87/32"
 instance_type = "t3.small"
