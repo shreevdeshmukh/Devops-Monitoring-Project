@@ -1,1 +1,56 @@
+groups:
+  - name: infrastructure-alerts
+    rules:
+      - alert: InstanceDown
+        expr: up{job="node-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node exporter is unreachable"
+          description: "Prometheus cannot scrape {{ $labels.instance }}."
 
+      - alert: HighCPUUsage
+        expr: |
+          100 * (1 - avg by (instance) (
+            rate(node_cpu_seconds_total{mode="idle"}[5m])
+          )) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is above 80% on {{ $labels.instance }}."
+
+      - alert: LowAvailableMemory
+        expr: |
+          100 * (1 -
+            node_memory_MemAvailable_bytes /
+            node_memory_MemTotal_bytes
+          ) > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory utilization"
+          description: "Memory usage is above 90% on {{ $labels.instance }}."
+
+      - alert: LowDiskSpace
+        expr: |
+          100 * (
+            1 -
+            node_filesystem_avail_bytes{
+              mountpoint="/",
+              fstype!~"tmpfs|overlay|squashfs"
+            } /
+            node_filesystem_size_bytes{
+              mountpoint="/",
+              fstype!~"tmpfs|overlay|squashfs"
+            }
+          ) > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space"
+          description: "Root filesystem usage is above 85% on {{ $labels.instance }}."
